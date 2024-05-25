@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat con Hugging Face</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <input type="text" id="chat-input" placeholder="Escribe un mensaje...">
+        <button id="send-btn">Enviar</button>
+    </div>
+    <script>
+        document.getElementById('send-btn').addEventListener('click', function() {
+            var input = document.getElementById('chat-input');
+            var message = input.value.trim();
+            if (message !== '') {
+                var chatBox = document.getElementById('chat-box');
+                var userMessage = document.createElement('div');
+                userMessage.textContent = "Tú: " + message;
+                chatBox.appendChild(userMessage);
+                input.value = '';
+                fetch('/generate-text', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: message})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var aiMessage = document.createElement('div');
+                    aiMessage.textContent = "AI: " + data.text;
+                    chatBox.appendChild(aiMessage);
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
+</body>
+</html>
